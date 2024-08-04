@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import { userRouter } from './routes/user.js';
+import { adminRouter } from './routes/admin.js';
 
 dotenv.config();
 
@@ -18,7 +20,15 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Middleware
 app.use(express.json());
 
+
 // Routes will go here
+console.log("User route declared");
+
+app.use("/api/user",userRouter);
+
+console.log("Admin route declared");
+
+app.use("/api/admin",adminRouter);
 
 // Start the server
 app.listen(PORT, () => {
