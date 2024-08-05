@@ -1,24 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase, faUser,faUserFriends } from '@fortawesome/free-solid-svg-icons';
 
 function Sidebar() {
   return (
-    <div className="bg-gray-800 h-screen flex flex-col">
-      <div className="flex items-center p-4">
-        {/* Logo or app name */}
-      </div>
-      <ul className="flex flex-col gap-4">
+    <div className="bg-gray-800 h-screen space-y-8 flex flex-col items-center">
+      <Link to="/" >
+        <h3 className="text-3xl font-bold text-white p-6">1HR</h3>
+      </Link>
+      <ul className="flex flex-col gap-8 px-6 p-4 justify-center text-xl">
         <li>
-          <Link to="/dashboard" className="flex items-center p-2 rounded-md hover:bg-gray-700">
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor"  height={"24px"} width={"24px"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7m-7-7v10"></path></svg>
-            <span className="ml-2">Dashboard</span>
+          <Link to="/client" className="flex items-center p-2 rounded-md hover:bg-gray-700">
+            <FontAwesomeIcon icon={faUser} />
+            <span className="ml-2">Clients</span>
           </Link>
         </li>
         <li>
-          {/* Another menu item */}
+          <Link to="/sub-vendor" className="flex items-center p-2 rounded-md hover:bg-gray-700">
+            <FontAwesomeIcon icon={faUserFriends} />
+            <span className="ml-2">Sub vendors</span>
+          </Link>
         </li>
         <li>
-          {/* Another menu item */}
+        <Link to="/job-postings" className="flex items-center p-2 rounded-md hover:bg-gray-700">
+            <FontAwesomeIcon icon={faBriefcase} />
+            <span className="ml-2">Job postings</span>
+          </Link>
         </li>
       </ul>
     </div>
