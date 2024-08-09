@@ -5,7 +5,7 @@ import cors from 'cors';
 import { userRouter } from './routes/user.js';
 import { adminRouter } from './routes/admin.js';
 import { clientsRouter } from './routes/clients.js';
-import { subVendorsRouter } from './routes/sub-vendor..js';
+import { subVendorsRouter } from './routes/sub-vendor.js';
 
 dotenv.config();
 
