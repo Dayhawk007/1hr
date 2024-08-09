@@ -20,11 +20,11 @@ const auth = async (req, res, next) => {
 };
 
 // Middleware to check user type
-const checkUserType = (req, res, next) => {
-  if (req.user.type === req.body.type) {
+const checkUserType = async(req, res, next) => {
+  if(req.user && req.user.type === req.body.type) {
     next();
   } else {
-    res.status(403).json({ message: 'Forbidden' });
+    res.status(401).json({ message: 'Unauthorized' });
   }
 };
 
@@ -39,5 +39,4 @@ const comparePassword = async (password, hashedPassword) => {
 };
 
 export { auth, checkUserType, hashPassword, comparePassword };
-export { auth, checkUserType };
 

@@ -3,66 +3,66 @@ import { useUserContext } from '../contexts/UserContext';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
-const ClientList = () => {
+const SubVendorList = () => {
   const { user, loading } = useUserContext();
-  const [clients, setClients] = useState([]);
+  const [subVendors, setSubVendors] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentClient, setCurrentClient] = useState(null);
+  const [currentSubVendor, setCurrentSubVendor] = useState(null);
 
-  // Fetch clients from API on component mount
+  // Fetch sub-vendors from API on component mount
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchSubVendors = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/client'); // Adjust the API endpoint as needed
-        setClients(response.data);
+        const response = await axios.get('http://127.0.0.1:5000/api/sub-vendor'); // Adjust the API endpoint as needed
+        setSubVendors(response.data);
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error('Error fetching sub-vendors:', error);
       }
     };
-    fetchClients();
+    fetchSubVendors();
   }, []);
 
-  const handleAddClient = () => {
-    setCurrentClient({ name: '', email: '', password: '' });
+  const handleAddSubVendor = () => {
+    setCurrentSubVendor({ name: '', email: '', password: '' });
     setIsModalOpen(true);
   };
 
-  const handleEditClient = (index) => {
-    setCurrentClient({ ...clients[index], index });
+  const handleEditSubVendor = (index) => {
+    setCurrentSubVendor({ ...subVendors[index], index });
     setIsModalOpen(true);
   };
 
-  const handleDeleteClient = async (id) => {
+  const handleDeleteSubVendor = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:5000/api/client/${id}`);
-      setClients(clients.filter(client => client._id !== id));
+      await axios.delete(`http://127.0.0.1:5000/api/sub-vendor/${id}`);
+      setSubVendors(subVendors.filter(subVendor => subVendor._id !== id));
     } catch (error) {
-      console.error('Error deleting client:', error);
+      console.error('Error deleting sub-vendor:', error);
     }
   };
 
-  const handleSaveClient = async () => {
-    if (currentClient.index !== undefined) {
-      // Update existing client
+  const handleSaveSubVendor = async () => {
+    if (currentSubVendor.index !== undefined) {
+      // Update existing sub-vendor
       try {
-        const response = await axios.patch(`http://127.0.0.1:5000/api/client/${clients[currentClient.index]._id}`, currentClient);
-        const updatedClients = [...clients];
-        updatedClients[currentClient.index] = response.data;
-        setClients(updatedClients);
+        const response = await axios.patch(`http://127.0.0.1:5000/api/sub-vendor/${subVendors[currentSubVendor.index]._id}`, currentSubVendor);
+        const updatedSubVendors = [...subVendors];
+        updatedSubVendors[currentSubVendor.index] = response.data;
+        setSubVendors(updatedSubVendors);
       } catch (error) {
-        console.error('Error updating client:', error);
+        console.error('Error updating sub-vendor:', error);
       }
     } else {
-      // Add new client
+      // Add new sub-vendor
       try {
-        const response = await axios.post('http://127.0.0.1:5000/api/client', currentClient);
-        setClients([...clients, response.data]);
+        const response = await axios.post('http://127.0.0.1:5000/api/sub-vendor', currentSubVendor);
+        setSubVendors([...subVendors, response.data]);
       } catch (error) {
-        console.error('Error adding client:', error);
+        console.error('Error adding sub-vendor:', error);
       }
     }
     setIsModalOpen(false);
-    setCurrentClient(null);
+    setCurrentSubVendor(null);
   };
 
   if (loading) {
@@ -76,33 +76,33 @@ const ClientList = () => {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
       <div className="w-full max-w-4xl mx-auto bg-gray-800 shadow-lg rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-4">Client List</h1>
+        <h1 className="text-2xl font-bold mb-4">Sub-Vendor List</h1>
         <button
-          onClick={handleAddClient}
+          onClick={handleAddSubVendor}
           className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
         >
-          Add Client
+          Add Sub-Vendor
         </button>
         <ul>
-          {clients.map((client, index) => (
+          {subVendors.map((subVendor, index) => (
             <li
               key={index}
               className="flex items-center space-x-4 p-4 border-b border-gray-700 last:border-b-0"
             >
               <div className="flex-1">
                 <h2 className="text-lg font-semibold text-gray-200">
-                  {client.name}
+                  {subVendor.name}
                 </h2>
-                <p className="text-gray-400">{client.email}</p>
+                <p className="text-gray-400">{subVendor.email}</p>
               </div>
               <button
-                onClick={() => handleEditClient(index)}
+                onClick={() => handleEditSubVendor(index)}
                 className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
               >
                 Edit
               </button>
               <button
-                onClick={() => handleDeleteClient(client._id)}
+                onClick={() => handleDeleteSubVendor(subVendor._id)}
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
                 Delete
@@ -116,15 +116,15 @@ const ClientList = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold mb-4">
-              {currentClient.index !== undefined ? 'Edit Client' : 'Add Client'}
+              {currentSubVendor.index !== undefined ? 'Edit Sub-Vendor' : 'Add Sub-Vendor'}
             </h2>
             <div className="mb-4">
               <label className="block text-gray-400 mb-1">Name</label>
               <input
                 type="text"
-                value={currentClient.name}
+                value={currentSubVendor.name}
                 onChange={(e) =>
-                  setCurrentClient({ ...currentClient, name: e.target.value })
+                  setCurrentSubVendor({ ...currentSubVendor, name: e.target.value })
                 }
                 className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
               />
@@ -133,9 +133,9 @@ const ClientList = () => {
               <label className="block text-gray-400 mb-1">Email</label>
               <input
                 type="email"
-                value={currentClient.email}
+                value={currentSubVendor.email}
                 onChange={(e) =>
-                  setCurrentClient({ ...currentClient, email: e.target.value })
+                  setCurrentSubVendor({ ...currentSubVendor, email: e.target.value })
                 }
                 className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
               />
@@ -144,9 +144,9 @@ const ClientList = () => {
               <label className="block text-gray-400 mb-1">Password</label>
               <input
                 type="password"
-                value={currentClient.password}
+                value={currentSubVendor.password}
                 onChange={(e) =>
-                  setCurrentClient({ ...currentClient, password: e.target.value })
+                  setCurrentSubVendor({ ...currentSubVendor, password: e.target.value })
                 }
                 className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
               />
@@ -154,13 +154,13 @@ const ClientList = () => {
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500"
               >
                 Cancel
               </button>
               <button
-                onClick={handleSaveClient}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                onClick={handleSaveSubVendor}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 Save
               </button>
@@ -172,4 +172,4 @@ const ClientList = () => {
   );
 };
 
-export default ClientList;
+export default SubVendorList;

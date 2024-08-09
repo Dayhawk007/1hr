@@ -1,12 +1,12 @@
 import express from 'express';
-import { auth } from '../auth/auth.js';
+import { auth ,checkUserType} from '../auth/auth.js';
 import Client from '../models/client.js';
 import SubVendor from '../models/subVendor.js';
 import JobPosting from '../models/jobPosting.js';
 
 const router = express.Router();
 
-router.post('/addClient', auth, checkUserType('admin'), async (req, res) => {
+router.post('/addClient', auth,checkUserType, async (req, res) => {
   try {
     const client = new Client({
       name: req.body.name,
@@ -21,7 +21,7 @@ router.post('/addClient', auth, checkUserType('admin'), async (req, res) => {
   }
 });
 
-router.post('/addJobPosting', auth, checkUserType('admin'), async (req, res) => {
+router.post('/addJobPosting', auth, checkUserType, async (req, res) => {
   try {
     const job = new JobPosting({
       title: req.body.title,
@@ -39,7 +39,7 @@ router.post('/addJobPosting', auth, checkUserType('admin'), async (req, res) => 
   }
 });
 
-router.post('/addSubVendor', auth, checkUserType('admin'), async (req, res) => {
+router.post('/addSubVendor', auth, async (req, res) => {
   try {
     const subVendor = new SubVendor({
       name: req.body.name,

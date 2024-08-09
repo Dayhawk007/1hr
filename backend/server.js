@@ -1,8 +1,11 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import { userRouter } from './routes/user.js';
 import { adminRouter } from './routes/admin.js';
+import { clientsRouter } from './routes/clients.js';
+import { subVendorsRouter } from './routes/sub-vendor..js';
 
 dotenv.config();
 
@@ -20,11 +23,17 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Middleware
 app.use(express.json());
 
+app.use(cors());
+
 
 // Routes will go here
 console.log("User route declared");
 
 app.use("/api/user",userRouter);
+
+app.use("/api/client",clientsRouter);
+
+app.use("/api/sub-vendor",subVendorsRouter)
 
 console.log("Admin route declared");
 

@@ -1,17 +1,26 @@
 // src/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../contexts/UserContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  const handleLogin = () => {
-    if (email === 'guest@mail.com' && password === 'guest') {
-      navigate('/');
-    } else {
-      alert('Invalid email or password');
+  const {loginUser} = useUserContext();
+  const handleLogin = async() => {
+    if(email === '' || password === '') {
+      alert('Please enter email and password');
+    }
+    else {
+      const status=await loginUser({email, password});
+      console.log("Status ",status);
+      if(status===true) {
+        navigate('/');
+      }
+      else {
+        alert('Invalid credentials or something went wrong');
+      }
     }
   };
 
@@ -27,7 +36,6 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
           />
-          <p className="text-gray-500 mt-1">Hint: guest@mail.com</p>
         </div>
         <div className="mb-6">
           <label className="block text-gray-400 mb-1">Password</label>
@@ -37,7 +45,6 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:bg-gray-600"
           />
-          <p className="text-gray-500 mt-1">Hint: guest</p>
         </div>
         <button
           onClick={handleLogin}

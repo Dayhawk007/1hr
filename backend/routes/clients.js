@@ -1,12 +1,12 @@
 import express from 'express';
-import Client from '../models/client.js';
+import User from '../models/user.js';
 
 const router = express.Router();
 
 // Get all clients
 router.get('/', async (req, res) => {
   try {
-    const clients = await Client.find();
+    const clients = await User.find({ type: 'client' });
     res.json(clients);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -20,12 +20,13 @@ router.get('/:id', getClient, (req, res) => {
 
 // Create a new client
 router.post('/', async (req, res) => {
-  const client = new Client({
+  const client = new User({
     name: req.body.name,
     email: req.body.email,
-    phone: req.body.phone,
-    avatarUrl: req.body.avatarUrl,
+    password: req.body.password,
+    type: 'client',
   });
+
   try {
     const newClient = await client.save();
     res.status(201).json(newClient);
@@ -42,12 +43,10 @@ router.patch('/:id', getClient, async (req, res) => {
   if (req.body.email != null) {
     res.client.email = req.body.email;
   }
-  if (req.body.phone != null) {
-    res.client.phone = req.body.phone;
+  if (req.body.password != null) {
+    res.client.password = req.body.password;
   }
-  if (req.body.avatarUrl != null) {
-    res.client.avatarUrl = req.body.avatarUrl;
-  }
+
   try {
     const updatedClient = await res.client.save();
     res.json(updatedClient);
@@ -69,7 +68,7 @@ router.delete('/:id', getClient, async (req, res) => {
 // Middleware to get client by ID
 async function getClient(req, res, next) {
   try {
-    const client = await Client.findById(req.params.id);
+    const client = await User.findOne({ _id: req.params.id, type: 'client' });
     if (client == null) {
       return res.status(404).json({ message: 'Cannot find client' });
     }
@@ -80,4 +79,4 @@ async function getClient(req, res, next) {
   }
 }
 
-export default router;
+export { router as clientsRouter };

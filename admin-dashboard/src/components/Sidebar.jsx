@@ -1,9 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBriefcase, faUser,faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import { faBriefcase, faUser, faUserFriends, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { useUserContext } from '../contexts/UserContext';
+
 
 function Sidebar() {
+  const { logoutUser } = useUserContext();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logoutUser();
+    navigate('/login');
+  };
+
   return (
     <div className="bg-gray-800 h-screen space-y-8 flex flex-col items-center">
       <Link to="/" >
@@ -28,9 +38,16 @@ function Sidebar() {
             <span className="ml-2">Job postings</span>
           </Link>
         </li>
+        <li>
+          <button onClick={handleLogout} className="flex items-center p-2 rounded-md hover:bg-gray-700">
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            <span className="ml-2">Log out</span>
+          </button>
+        </li>
       </ul>
     </div>
   );
 }
 
 export default Sidebar;
+
