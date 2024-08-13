@@ -33,7 +33,7 @@ function Sidebar() {
           </Link>
         </li>
         <li>
-        <Link to="/job-postings" className="flex items-center p-2 rounded-md hover:bg-gray-700">
+        <Link to="/job-posting" className="flex items-center p-2 rounded-md hover:bg-gray-700">
             <FontAwesomeIcon icon={faBriefcase} />
             <span className="ml-2">Job postings</span>
           </Link>

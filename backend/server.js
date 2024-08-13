@@ -6,6 +6,7 @@ import { userRouter } from './routes/user.js';
 import { adminRouter } from './routes/admin.js';
 import { clientsRouter } from './routes/clients.js';
 import { subVendorsRouter } from './routes/sub-vendor.js';
+import { jobPostingRouter } from './routes/jobPosting.js';
 
 dotenv.config();
 
@@ -31,9 +32,17 @@ console.log("User route declared");
 
 app.use("/api/user",userRouter);
 
+console.log("Client route declared");
+
 app.use("/api/client",clientsRouter);
 
+console.log("Sub-Vendor route declared");
+
 app.use("/api/sub-vendor",subVendorsRouter)
+
+console.log("Job Posting route declared");
+
+app.use("/api/jobPosting",jobPostingRouter);
 
 console.log("Admin route declared");
 
