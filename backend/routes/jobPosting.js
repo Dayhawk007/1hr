@@ -95,6 +95,26 @@ router.patch(
   }
 );
 
+router.get('/job/:jobId/applications', async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    // Fetch applications associated with the job ID
+    const applications = await Application.find({ job: jobId })
+      .populate('client', 'name')  // Populate the client field with the client's name
+      .populate('job', 'title');   // Populate the job field with the job's title
+
+    if (!applications || applications.length === 0) {
+      return res.status(404).json({ message: 'No applications found for this job.' });
+    }
+
+    res.json(applications);
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // DELETE a job posting
 router.delete('/:id', async (req, res) => {
   try {
@@ -107,5 +127,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting job posting', error });
   }
 });
+
+
 
 export { router as jobPostingRouter };
