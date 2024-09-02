@@ -1,6 +1,7 @@
 import express from 'express';
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
+import JobPosting from '../models/jobPosting.js';
 
 const router = express.Router();
 
@@ -80,5 +81,15 @@ async function getClient(req, res, next) {
     return res.status(500).json({ error: err.message });
   }
 }
+
+router.get('/:id/job-posting', async (req, res) => {
+  try {
+    const applications = await JobPosting.find({ clientReference: req.params.id });
+    res.json(applications);
+  } catch (err) {
+    console.error('Error fetching applications:', err);
+    res.status(500).json({ error: err.message });
+  }
+})
 
 export { router as clientsRouter };

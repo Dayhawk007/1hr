@@ -1,6 +1,7 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import JobPosting from '../models/jobPosting.js';
+import Application from "../models/application.js";
 
 const router = express.Router();
 
@@ -95,7 +96,7 @@ router.patch(
   }
 );
 
-router.get('/job/:jobId/applications', async (req, res) => {
+router.get('/:jobId/applications', async (req, res) => {
   try {
     const { jobId } = req.params;
 
@@ -105,7 +106,7 @@ router.get('/job/:jobId/applications', async (req, res) => {
       .populate('job', 'title');   // Populate the job field with the job's title
 
     if (!applications || applications.length === 0) {
-      return res.status(404).json({ message: 'No applications found for this job.' });
+      return res.status(400).json({ message: 'No applications found for this job.' });
     }
 
     res.json(applications);

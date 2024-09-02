@@ -12,7 +12,8 @@ const JobPostingList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jobPostingsResponse = await axios.get('http://127.0.0.1:5000/api/jobPosting');
+        const jobPostingsResponse = await axios.get(`http://127.0.0.1:5000/api/client/${user.user._id}/job-posting`);
+
         setJobPostings(jobPostingsResponse.data);
         setDataReady(true);
       } catch (error) {
@@ -44,14 +45,13 @@ const JobPostingList = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
-      <div className="w-full max-w-6xl mx-auto bg-gray-800 shadow-lg rounded-lg p-6">
+    <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center text-primary">
+      <div className="w-full max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <h1 className="text-2xl font-bold mb-4">Job Postings</h1>
-        <table className="table-auto w-full bg-gray-700 rounded-lg">
+        <table className="table-auto w-full bg-gray-100 rounded-lg">
           <thead>
             <tr>
               <th className="px-4 py-2">Title</th>
-              <th className="px-4 py-2">Client</th>
               <th className="px-4 py-2">Location</th>
               <th className="px-4 py-2">Application Deadline</th>
               <th className="px-4 py-2">Compensation Range</th>
@@ -60,11 +60,8 @@ const JobPostingList = () => {
           </thead>
           <tbody>
             {jobPostings.map((job) => (
-              <tr key={job._id} className="text-gray-400 border-b border-gray-600 text-center">
+              <tr key={job._id} className="text-black text-center">
                 <td className="px-4 py-2">{job.title}</td>
-                <td className="px-4 py-2">
-                  {job.clientReference !== undefined ? job.clientReference.name : "Not Available"}
-                </td>
                 <td className="px-4 py-2">{job.location}</td>
                 <td className="px-4 py-2">{new Date(job.applicationDeadline).toLocaleDateString()}</td>
                 <td className="px-4 py-2">₹{formatCompensation(job.compensationStart)} - ₹{formatCompensation(job.compensationEnd)}</td>
