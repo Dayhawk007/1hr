@@ -30,6 +30,16 @@ const jobPostingSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  experienceRange: {
+    min: {
+      type: Number,
+      required: true,
+    },
+    max: {
+      type: Number,
+      required: true,
+    },
+  },
   questions: [
     {
       questionText: {

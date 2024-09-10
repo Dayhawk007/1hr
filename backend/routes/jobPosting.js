@@ -44,6 +44,8 @@ router.post(
     body('questions.*.questionText').notEmpty().withMessage('Question text is required'),
     body('questions.*.questionType').isIn(['text', 'multiple-choice']).withMessage('Invalid question type'),
     body('questions.*.options').optional().isArray().withMessage('Options must be an array'),
+    body('experienceRange.min').isNumeric().withMessage('Minimum experience must be a number'),
+    body('experienceRange.max').isNumeric().withMessage('Maximum experience must be a number'),
   ],
   async (req, res) => {
     const errors = validationResult(req);

@@ -22,7 +22,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center text-primary">
-      <h1 className="text-6xl font-bold animate-fade-in">1HR ATS ADMIN</h1>
+      <h1 className="text-6xl font-bold animate-fade-in">1HR ATS SUB VENDOR</h1>
   </div>
   );
 }

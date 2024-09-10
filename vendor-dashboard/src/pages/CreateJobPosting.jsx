@@ -10,7 +10,6 @@ const JobForm = (props) => {
     const [applicationDeadline, setApplicationDeadline] = useState('');
     const [compensationStart, setCompensationStart] = useState('');
     const [compensationEnd, setCompensationEnd] = useState('');
-    const [experienceRange, setExperienceRange] = useState({ min: '', max: '' });
     const [questions, setQuestions] = useState([{ questionText: '', questionType: 'text', options: [] }]);
     const [clients, setClients] = useState([]); // State to store fetched clients
 
@@ -68,12 +67,6 @@ const JobForm = (props) => {
             case 'compensationEnd':
                 setCompensationEnd(value);
                 break;
-            case 'experienceMin':
-                setExperienceRange({...experienceRange, min: value});
-                break;
-            case 'experienceMax':
-                setExperienceRange({...experienceRange, max: value});
-                break;
             default:
                 break;
         }
@@ -102,17 +95,11 @@ const JobForm = (props) => {
         setQuestions(updatedQuestions);
     };
 
-    const handleRemoveOption = (questionIndex, optionIndex) => {
-        const updatedQuestions = [...questions];
-        updatedQuestions[questionIndex].options.splice(optionIndex, 1);
-        setQuestions(updatedQuestions);
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         // Basic validation
-        if (!title || !description || !client || !location || !applicationDeadline || !compensationStart || !compensationEnd || !experienceRange.min || !experienceRange.max) {
+        if (!title || !description || !client || !location || !applicationDeadline || !compensationStart || !compensationEnd) {
             alert('All fields are required.');
             return;
         }
@@ -129,7 +116,6 @@ const JobForm = (props) => {
                 compensationStart,
                 compensationEnd,
                 questions,
-                experienceRange
             });
 
             // Handle successful submission
@@ -250,41 +236,6 @@ const JobForm = (props) => {
                     />
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold mb-2">Experience Range</h2>
-                    <div className="flex space-x-4">
-                        <div className="flex-1">
-                            <label htmlFor="experienceMin" className="block text-white mb-1">
-                                Minimum Experience (years):
-                            </label>
-                            <input
-                                type="number"
-                                id="experienceMin"
-                                name="experienceMin"
-                                value={experienceRange.min}
-                                onChange={handleInputChange}
-                                required
-                                min="0"
-                                className="w-full px-4 py-2 rounded bg-white text-black focus:outline-none"
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <label htmlFor="experienceMax" className="block text-white mb-1">
-                                Maximum Experience (years):
-                            </label>
-                            <input
-                                type="number"
-                                id="experienceMax"
-                                name="experienceMax"
-                                value={experienceRange.max}
-                                onChange={handleInputChange}
-                                required
-                                min="0"
-                                className="w-full px-4 py-2 rounded bg-white text-black focus:outline-none"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div>
                     <h2 className="text-xl font-bold mb-2">Questions</h2>
                     {questions.map((question, index) => (
                         <div key={index}>
@@ -315,38 +266,29 @@ const JobForm = (props) => {
                                 <option value="multiple-choice">Multiple Choice</option>
                             </select>
                             {question.questionType === 'multiple-choice' && (
-                                <div className='flex flex-col space-y-2 py-4'>
+                                <div className='flex flex-row items-center space-x-4 py-4'>
                                     <label htmlFor={`options-${index}`} className="block text-white mb-1">
                                         Options:
                                     </label>
-                                    <div className='flex flex-row space-x-4'>
                                     {question.options.map((option, optionIndex) => (
-                                        <div key={optionIndex} className="flex flex-row items-center space-x-2">
+                                        <div key={optionIndex}>
                                             <input
                                                 type="text"
                                                 id={`option-${index}-${optionIndex}`}
                                                 name="option"
                                                 value={option}
                                                 onChange={(event) => handleOptionChange(index, optionIndex, event)}
-                                                className="px-4 py-2 rounded bg-white text-black focus:outline-none flex-grow"
+                                                className="px-4 py-2 rounded bg-white text-black focus:outline-none"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveOption(index, optionIndex)}
-                                                className="bg-red-500 text-white px-2 py-2 rounded hover:bg-red-600"
-                                            >
-                                                Remove
-                                            </button>
                                         </div>
                                     ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleAddOption(index)}
-                                        className="bg-white text-primary px-4 py-2 rounded hover:bg-gray-100 self-start"
-                                    >
-                                        Add Option
-                                    </button>
-                                    </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddOption(index)}
+                                                className="bg-white text-primary px-4 py-2 rounded hover:bg-gray-100"
+                                            >
+                                                Add Option
+                                            </button>
                                 </div>
                             )}
                         </div>

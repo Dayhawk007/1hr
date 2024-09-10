@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import path from "path";
+
 import { userRouter } from './routes/user.js';
 import { adminRouter } from './routes/admin.js';
 import { clientsRouter } from './routes/clients.js';
@@ -52,6 +54,7 @@ app.use("/api/application",applicationRouter);
 console.log("Admin route declared");
 
 app.use("/api/admin",adminRouter);
+
 
 // Start the server
 app.listen(PORT, () => {

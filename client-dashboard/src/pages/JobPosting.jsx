@@ -68,7 +68,7 @@ const JobPostingList = () => {
                 <td className="px-4 py-2">
                   <button
                     onClick={() => handleShowApplications(job._id)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-primary text-white px-4 py-2 rounded hover:bg-purple-800"
                   >
                     Show Applications
                   </button>

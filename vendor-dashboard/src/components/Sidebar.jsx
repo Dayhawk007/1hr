@@ -19,8 +19,8 @@ function Sidebar() {
       <Link to="/" >
         <h3 className="text-3xl font-bold text-white p-6">1HR</h3>
       </Link>
-      <ul className="flex flex-col gap-8 px-6 p-4 justify-center items-center text-xl">
-        <li>
+      <ul className="flex flex-col gap-8 p-6 justify-center  items-center text-xl">
+        {/* <li>
           <Link to="/client" className="flex items-center p-2 rounded-md hover:bg-white hover:text-primary transition-colors duration-300">
             <FontAwesomeIcon icon={faUser} />
             <span className="ml-2">Clients</span>
@@ -31,7 +31,7 @@ function Sidebar() {
             <FontAwesomeIcon icon={faUserFriends} />
             <span className="ml-2">Sub vendors</span>
           </Link>
-        </li>
+        </li> */}
         <li>
         <Link to="/job-posting" className="flex items-center p-2 rounded-md hover:bg-white hover:text-primary transition-colors duration-300">
             <FontAwesomeIcon icon={faBriefcase} />
