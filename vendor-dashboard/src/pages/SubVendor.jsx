@@ -14,7 +14,7 @@ const SubVendorList = () => {
   useEffect(() => {
     const fetchSubVendors = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/sub-vendor'); // Adjust the API endpoint as needed
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/sub-vendor`); // Adjust the API endpoint as needed
         setSubVendors(response.data);
       } catch (error) {
         console.error('Error fetching sub-vendors:', error);
@@ -35,7 +35,7 @@ const SubVendorList = () => {
 
   const handleDeleteSubVendor = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:5000/api/sub-vendor/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/sub-vendor/${id}`);
       setSubVendors(subVendors.filter(subVendor => subVendor._id !== id));
     } catch (error) {
       console.error('Error deleting sub-vendor:', error);
@@ -46,7 +46,7 @@ const SubVendorList = () => {
     if (currentSubVendor.index !== undefined) {
       // Update existing sub-vendor
       try {
-        const response = await axios.patch(`http://127.0.0.1:5000/api/sub-vendor/${subVendors[currentSubVendor.index]._id}`, currentSubVendor);
+        const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/sub-vendor/${subVendors[currentSubVendor.index]._id}`, currentSubVendor);
         const updatedSubVendors = [...subVendors];
         updatedSubVendors[currentSubVendor.index] = response.data;
         setSubVendors(updatedSubVendors);
@@ -56,7 +56,7 @@ const SubVendorList = () => {
     } else {
       // Add new sub-vendor
       try {
-        const response = await axios.post('http://127.0.0.1:5000/api/sub-vendor', currentSubVendor);
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/sub-vendor`, currentSubVendor);
         setSubVendors([...subVendors, response.data]);
       } catch (error) {
         console.error('Error adding sub-vendor:', error);

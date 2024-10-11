@@ -2,14 +2,40 @@ import express from 'express';
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 import JobPosting from '../models/jobPosting.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
-// Get all clients
+// Get all clients with pagination, sorting, and filtering
 router.get('/', async (req, res) => {
   try {
-    const clients = await User.find({ type: 'client' });
-    res.json(clients);
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', name, email } = req.query;
+
+    // Prepare filter
+    const filter = { type: 'client' };
+    if (name) filter.name = { $regex: name, $options: 'i' };
+    if (email) filter.email = { $regex: email, $options: 'i' };
+
+    // Prepare sort
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const clients = await User.find(filter)
+      .select('-password')  // Exclude password field
+      .sort(sort)
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit));
+
+    // Get total count for pagination
+    const totalClients = await User.countDocuments(filter);
+
+    res.json({
+      clients,
+      totalPages: Math.ceil(totalClients / limit),
+      currentPage: Number(page),
+      totalClients
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -17,7 +43,9 @@ router.get('/', async (req, res) => {
 
 // Get a single client
 router.get('/:id', getClient, (req, res) => {
-  res.json(res.client);
+  const clientWithoutPassword = res.client.toObject();
+  delete clientWithoutPassword.password;
+  res.json(clientWithoutPassword);
 });
 
 // Create a new client
@@ -52,7 +80,9 @@ router.patch('/:id', getClient, async (req, res) => {
 
   try {
     const updatedClient = await res.client.save();
-    res.json(updatedClient);
+    const clientWithoutPassword = updatedClient.toObject();
+    delete clientWithoutPassword.password;
+    res.json(clientWithoutPassword);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -71,7 +101,7 @@ router.delete('/:id', getClient, async (req, res) => {
 // Middleware to get client by ID
 async function getClient(req, res, next) {
   try {
-    const client = await User.findOne({ _id: req.params.id, type: 'client' });
+    const client = await User.findOne({ _id: req.params.id, type: 'client' }).select('-password');
     if (client == null) {
       return res.status(404).json({ message: 'Cannot find client' });
     }
@@ -81,6 +111,8 @@ async function getClient(req, res, next) {
     return res.status(500).json({ error: err.message });
   }
 }
+
+
 
 router.get('/:id/job-posting', async (req, res) => {
   try {

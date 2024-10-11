@@ -4,11 +4,36 @@ import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
-// Get all sub-vendors
+// Get all sub-vendors with pagination, sorting, and filtering
 router.get('/', async (req, res) => {
   try {
-    const subVendors = await User.find({ type: 'sub-vendor' });
-    res.json(subVendors);
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc', name, email } = req.query;
+
+    // Prepare filter
+    const filter = { type: 'sub-vendor' };
+    if (name) filter.name = { $regex: name, $options: 'i' };
+    if (email) filter.email = { $regex: email, $options: 'i' };
+
+    // Prepare sort
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const subVendors = await User.find(filter)
+      .select('-password')
+      .sort(sort)
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit));
+
+    // Get total count for pagination
+    const totalSubVendors = await User.countDocuments(filter);
+
+    res.json({
+      subVendors,
+      totalPages: Math.ceil(totalSubVendors / limit),
+      currentPage: Number(page),
+      totalSubVendors
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

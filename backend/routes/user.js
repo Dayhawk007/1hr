@@ -6,43 +6,45 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from 'url';
+import { put } from '@vercel/blob';
 
-const router=express.Router();
+const router = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configure multer for file upload
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ storage: storage });
+// Configure multer for memory storage
+const upload = multer({ storage: multer.memoryStorage() });
 
 // File upload route
-router.post('/upload-resume', upload.single('resume'), (req, res) => {
+router.post('/upload-resume', upload.single('resume'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
   
-  const fileUrl = `http://127.0.0.1:5000/api/user/uploads/${req.file.filename}`;
-  res.json({ fileUrl: fileUrl });
+  try {
+    // Generate a unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = `resume-${uniqueSuffix}-${req.file.originalname}`;
+
+    // Upload file to Vercel Blob
+    const blob = await put(filename, req.file.buffer, {
+      access: 'public',
+      contentType: req.file.mimetype
+    });
+
+    // Return the URL of the uploaded file
+    res.json({ fileUrl: blob.url });
+  } catch (error) {
+    console.log(error.message);
+    console.error('Error uploading file to Vercel Blob:', error);
+    res.status(500).json({ error: 'Failed to upload file' });
+  }
 });
 
+// Remove this line as it's no longer needed
+// router.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
-
-router.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Admin signup
 router.post('/signup', async (req, res) => {
   try {
@@ -145,5 +147,72 @@ router.post('/sub-vendor/login', async (req, res) => {
   }
 });
 
+// Update user (PATCH)
+router.patch('/:id', async (req, res) => {
+  try {
+    const { name, email, type } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (type) user.type = type;
+
+    const updatedUser = await user.save();
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete user
+router.delete('/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update user password
+router.patch('/update-password/:id', async (req, res) => {
+  const { newPassword } = req.body;
+  const userId = req.params.id;
+
+  if (!newPassword) {
+    return res.status(400).json({ error: 'New password is required' });
+  }
+
+  try {
+    // Validate user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export {router as userRouter}

@@ -1,7 +1,7 @@
 import express from 'express';
 import { auth ,checkUserType} from '../auth/auth.js';
 import Client from '../models/client.js';
-import SubVendor from '../models/subVendor.js';
+import SubVendor from '../models/subvendor.js';
 import JobPosting from '../models/jobPosting.js';
 
 const router = express.Router();

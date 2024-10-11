@@ -20,7 +20,7 @@ const JobForm = (props) => {
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:5000/api/client');
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/client`);
                 setClients(response.data);
             } catch (error) {
                 console.error('Error fetching clients:', error);
@@ -107,7 +107,7 @@ const JobForm = (props) => {
         // More complex validation can be added here, e.g., checking date format, numeric values, etc.
 
         try {
-            const response = await axios.post('http://127.0.0.1:5000/api/jobPosting', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/jobPosting`, {
                 title,
                 description,
                 clientReference: client,

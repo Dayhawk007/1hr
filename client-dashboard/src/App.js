@@ -8,7 +8,9 @@ import SubVendorList from './pages/SubVendor';
 import JobPostingList from './pages/JobPosting';
 import JobForm from './pages/CreateJobPosting';
 import ApplicationList from './pages/ApplicationList';
+import ShowApplicants from './pages/ApplicationTrello';
 import { UserProvider } from './contexts/UserContext';
+import ApplicantDetails from './pages/ApplicantDetails';
 
 function App() {
   return (
@@ -19,7 +21,8 @@ function App() {
         <Route path="/" element={<Layout><Dashboard /></Layout>} />
         <Route path="/job-posting" element={<Layout><JobPostingList /></Layout>} />
         <Route path="/job-posting/create" element={<Layout><JobForm/></Layout>} />
-        <Route path="/job-posting/:jobId/applications" element={<ApplicationList />} />
+        <Route path="/job-posting/:jobId/applications" element={<Layout><ShowApplicants /></Layout>} />
+        <Route path="/applicant/:applicantId" element={<Layout><ApplicantDetails /></Layout>} />
       </Routes>
     </Router>
     </UserProvider>

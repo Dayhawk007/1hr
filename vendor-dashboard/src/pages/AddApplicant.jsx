@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useUserContext } from '../contexts/UserContext';
 
 function AddApplicant() {
   const [jobDetails, setJobDetails] = useState(null);
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const { user, loading } = useUserContext();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -22,6 +24,7 @@ function AddApplicant() {
     totalExperience: '',
     relevantExperience: '',
     noticePeriod: '',
+    status: 'pre-screen',
     answers: [],
   });
 
@@ -30,7 +33,7 @@ function AddApplicant() {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/jobPosting/${jobId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/jobPosting/${jobId}`);
         setJobDetails(response.data);
         setFormData(prevData => ({
           ...prevData,
@@ -65,7 +68,7 @@ function AddApplicant() {
     formData.append('resume', file);
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/user/upload-resume', formData, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/user/upload-resume`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -88,9 +91,9 @@ function AddApplicant() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:5000/api/applications', { ...formData, job: jobDetails?._id });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/application`, { ...formData, job: jobDetails?._id,subVendor:user.user?._id });
       alert('Application submitted successfully!');
-      navigate(`/job-posting/${jobId}`);
+      navigate(`/job-posting/`);
     } catch (error) {
       console.error('Error submitting application:', error);
       alert('Error submitting application. Please try again.');

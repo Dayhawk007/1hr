@@ -18,6 +18,11 @@ const jobPostingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  mode:{
+    type: String,
+    enum: ['Hybrid', 'WFO', 'WFH'],
+    required: true,
+  },
   applicationDeadline: {
     type: Date,
     required: true,
@@ -61,6 +66,28 @@ const jobPostingSchema = new mongoose.Schema({
       ],
     },
   ],
+  rounds: {
+    type: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        stage: {
+          type: String,
+          enum: ['stage 1', 'stage 2', 'hired', 'rejected'],
+          required: true,
+        },
+      },
+    ],
+    default: [
+      { name: 'pre-screen', stage: 'stage 1' },
+      { name: 'screen', stage: 'stage 1' },
+      { name: 'pre-interview', stage: 'stage 1' },
+      { name: 'hired', stage: 'hired' },
+      { name: 'rejected', stage: 'rejected' },
+    ],
+  },
 });
 
 const JobPosting = mongoose.model('JobPosting', jobPostingSchema);

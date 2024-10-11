@@ -13,7 +13,7 @@ const ClientList = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/client'); // Adjust the API endpoint as needed
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/client`); // Adjust the API endpoint as needed
         setClients(response.data);
       } catch (error) {
         console.error('Error fetching clients:', error);
@@ -34,7 +34,7 @@ const ClientList = () => {
 
   const handleDeleteClient = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:5000/api/client/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/client/${id}`);
       setClients(clients.filter(client => client._id !== id));
     } catch (error) {
       console.error('Error deleting client:', error);
@@ -45,7 +45,7 @@ const ClientList = () => {
     if (currentClient.index !== undefined) {
       // Update existing client
       try {
-        const response = await axios.patch(`http://127.0.0.1:5000/api/client/${clients[currentClient.index]._id}`, currentClient);
+        const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/client/${clients[currentClient.index]._id}`, currentClient);
         const updatedClients = [...clients];
         updatedClients[currentClient.index] = response.data;
         setClients(updatedClients);
@@ -55,7 +55,7 @@ const ClientList = () => {
     } else {
       // Add new client
       try {
-        const response = await axios.post('http://127.0.0.1:5000/api/client', currentClient);
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/client`, currentClient);
         setClients([...clients, response.data]);
       } catch (error) {
         console.error('Error adding client:', error);

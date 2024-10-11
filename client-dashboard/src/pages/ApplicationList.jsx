@@ -14,7 +14,7 @@ const ApplicationList = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/jobPosting/${jobId}/applications`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/jobPosting/${jobId}/applications`);
         setApplications(response.data);
         setDataReady(true);
       } catch (error) {
@@ -28,7 +28,7 @@ const ApplicationList = () => {
 
   const updateApplication = async (id, application) => {
     try {
-      const response = await axios.patch(`http://127.0.0.1:5000/api/application/${id}`, application);
+      const response = await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${id}`, application);
       const updatedApplications = applications.map(app => {
         if (app._id === id) {
           return response.data;

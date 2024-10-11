@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // GET a single application by ID
 router.get('/:id', async (req, res) => {
   try {
-    const application = await Application.findById(req.params.id).populate('job');
+    const application = await Application.findById(req.params.id).populate('job').populate('client');
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -47,6 +47,8 @@ router.post('/', async (req, res) => {
       relevantExperience: req.body.relevantExperience,
       noticePeriod: req.body.noticePeriod,
       job: req.body.job,
+      client: req.body.client,
+      subVendor: req.body.subVendor,
     });
     const newApplication = await application.save();
     res.status(201).json(newApplication);
@@ -54,6 +56,8 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+
 
 // UPDATE an application
 router.patch('/:id', async (req, res) => {

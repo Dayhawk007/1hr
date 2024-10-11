@@ -10,7 +10,7 @@ import AddApplicant from './pages/AddApplicant';
 import JobForm from './pages/CreateJobPosting';
 import ShowApplicants from './pages/ApplicantTrello';
 import { UserProvider } from './contexts/UserContext';
-
+import ApplicantDetails from './pages/ApplicantDetails';
 function App() {
   return (
     <UserProvider>
@@ -22,6 +22,7 @@ function App() {
         <Route path="/job-posting/create" element={<Layout><JobForm/></Layout>} />
         <Route path="/job-posting/:jobId/add-applicant" element={<Layout><AddApplicant/></Layout>} />
         <Route path="/job-posting/:jobId/show-applicants" element={<Layout><ShowApplicants/></Layout>} />
+        <Route path="/applicant/:applicantId" element={<Layout><ApplicantDetails/></Layout>} />
       </Routes>
     </Router>
     </UserProvider>

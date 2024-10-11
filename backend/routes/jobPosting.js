@@ -2,14 +2,76 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import JobPosting from '../models/jobPosting.js';
 import Application from "../models/application.js";
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
-// GET all job postings
+// GET all job postings with filters and sorting
 router.get('/', async (req, res) => {
   try {
-    const jobPostings = await JobPosting.find().populate('clientReference');
-    res.json(jobPostings);
+    const { 
+      title, 
+      location, 
+      minCompensation, 
+      maxCompensation, 
+      minExperience, 
+      maxExperience,
+      sort,
+      limit = 10,
+      page = 1
+    } = req.query;
+
+    // Build filter object
+    const filter = {};
+    if (title) filter.title = new RegExp(title, 'i');
+    if (location) filter.location = new RegExp(location, 'i');
+    if (minCompensation) filter.compensationStart = { $gte: Number(minCompensation) };
+    if (maxCompensation) filter.compensationEnd = { $lte: Number(maxCompensation) };
+    if (minExperience) filter['experienceRange.min'] = { $gte: Number(minExperience) };
+    if (maxExperience) filter['experienceRange.max'] = { $lte: Number(maxExperience) };
+
+    // Build sort object
+    const sortObj = {};
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortObj[field] = order === 'desc' ? -1 : 1;
+    }
+
+    const skip = (page - 1) * limit;
+
+    var jobPostings = await JobPosting.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(Number(limit))
+      .populate('clientReference');
+
+    
+    const applicantsMapping = new Map();
+    for (const jobPosting of jobPostings) {
+      const applications = await Application.find({ job: jobPosting._id ,status:'pre-screen' });
+
+      if (applications.length > 0) {
+        applicantsMapping.set(jobPosting._id, applications.length);
+      }
+    }
+
+    console.log(applicantsMapping)
+
+    jobPostings= jobPostings.map((jobPosting) => {
+      const applicantCount = applicantsMapping.get(jobPosting._id) || 0;
+      return { ...jobPosting.toObject(), applicantCount };
+    });
+
+    console.log(jobPostings)
+
+    const total = await JobPosting.countDocuments(filter);
+
+    res.json({
+      jobPostings,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching job postings', error: error.message });
   }
@@ -105,7 +167,7 @@ router.get('/:jobId/applications', async (req, res) => {
     // Fetch applications associated with the job ID
     const applications = await Application.find({ job: jobId })
       .populate('client', 'name')  // Populate the client field with the client's name
-      .populate('job', 'title');   // Populate the job field with the job's title
+      .populate('job', 'title').populate('subVendor', 'name');   // Populate the job field with the job's title
 
     if (!applications || applications.length === 0) {
       return res.status(400).json({ message: 'No applications found for this job.' });

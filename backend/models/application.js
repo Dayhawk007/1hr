@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const applicationSchema = new mongoose.Schema({
   client: { type: mongoose.Schema.Types.ObjectId, ref: 'Clients' }, // Reference to Client model
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'JobPosting' }, // Reference to Job model
+  subVendor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to SubVendor model
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
