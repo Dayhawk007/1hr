@@ -34,7 +34,7 @@ const ApplicantDetails = () => {
   }
 
   const getStatusColor = (status) => {
-    if (['pre-screen', 'screen', 'pre-interview'].includes(status)) {
+    if (['pre-screen','pre-screen-rejected',  'pre-interview'].includes(status)) {
       return 'bg-blue-100';
     } else if (['round 1', 'round 2', 'round 3'].includes(status)) {
       return 'bg-green-100';

@@ -160,7 +160,7 @@ const JobForm = (props) => {
         try {
             const defaultRounds = [
                 { name: 'pre-screen', stage: 'stage 1' },
-                { name: 'screen', stage: 'stage 1' },
+                { name: 'pre-screen-rejected', stage: 'rejected' },
                 { name: 'pre-interview', stage: 'stage 1' },
                 { name: 'hired', stage: 'hired' },
                 { name: 'rejected', stage: 'rejected' },

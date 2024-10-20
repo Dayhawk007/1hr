@@ -14,7 +14,7 @@ const ApplicationTrello = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [warningMessage, setWarningMessage] = useState('');
   const columnRefs = useRef({});
-
+  const [currentFeedback, setCurrentFeedback] = useState(null);
   // Define allowed stages for client users
   const clientAllowedStages = ['stage 2'];
 
@@ -96,6 +96,7 @@ const ApplicationTrello = () => {
 
   // Handle drop
   const handleDrop = async (newStatus) => {
+    
     if (draggedApplication && canMoveCard(user.type, newStatus)) {
       // Show confirmation dialog using native window.confirm
       const confirmMove = window.confirm(
@@ -103,10 +104,15 @@ const ApplicationTrello = () => {
       );
 
       if (confirmMove) {
+        const feedbackInput = prompt('Please provide your feedback for the applicant:');
+        if(feedbackInput) {
+         
+        
         try {
           await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplication._id}`, {
-            status: newStatus
-          });
+            status: newStatus,
+            feedback: feedbackInput
+          }); 
 
           setApplications(
             applications.map((app) =>
@@ -124,6 +130,10 @@ const ApplicationTrello = () => {
           // Clear error message after 5 seconds
           setTimeout(() => setError(''), 5000);
         }
+      }
+      else{
+        alert('Feedback is required.');
+      }
       }
       setDraggedApplication(null);
     } else if (draggedApplication) {
@@ -159,7 +169,7 @@ const ApplicationTrello = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-gray-100 py-8 flex flex-col">
       <div className="max-w-7xl mx-auto px-4 flex-grow flex flex-col">
@@ -215,8 +225,14 @@ const ApplicationTrello = () => {
                       {getApplicationsByRound(round.name).length === 0 ? (
                         <p className="text-gray-500">No applications in this stage.</p>
                       ) : (
-                        getApplicationsByRound(round.name).map((application) => (
-                          <div key={application._id}>
+                        getApplicationsByRound(round.name).map((application) => {
+                          const currentFeedback = application.feedback.find(
+                            (feedback) => feedback.round.toLowerCase() === round.name.toLowerCase()
+                          );
+                          
+                          console.log(currentFeedback);
+                          return (
+                             <div key={application._id}>
                             <div
                               className={`bg-white p-4 rounded-lg shadow ${
                                 user.type !== 'sub-vendor' ? 'cursor-move' : ''
@@ -251,9 +267,22 @@ const ApplicationTrello = () => {
                                   {application.status}
                                 </span>
                               </div>
+                              {currentFeedback ? (
+                                  <div className="mt-2">
+                                    <p className="text-sm text-gray-700">
+                                      <strong>Feedback for {round.name}:</strong> {currentFeedback.feedbackText}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div className="mt-2">
+                                    <p className="text-sm text-gray-500">
+                                      No feedback provided for this round.
+                                    </p>
+                                  </div>
+                                )}
                             </div>
                           </div>
-                        ))
+                        )})
                       )}
                     </div>
                   </div>
@@ -287,3 +316,4 @@ const ApplicationTrello = () => {
 };
 
 export default ApplicationTrello;
+

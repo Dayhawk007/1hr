@@ -82,7 +82,7 @@ const jobPostingSchema = new mongoose.Schema({
     ],
     default: [
       { name: 'pre-screen', stage: 'stage 1' },
-      { name: 'screen', stage: 'stage 1' },
+      { name: 'pre-screen-rejected', stage: 'stage 1' },
       { name: 'pre-interview', stage: 'stage 1' },
       { name: 'hired', stage: 'hired' },
       { name: 'rejected', stage: 'rejected' },

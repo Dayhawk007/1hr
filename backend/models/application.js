@@ -13,7 +13,15 @@ const applicationSchema = new mongoose.Schema({
   country: { type: String, required: true },
   pincode: { type: String, required: true },
   resumeUrl: { type: String, required: true },
-  status: { type: String, required: true, enum: ['pre-screen', 'screen', 'pre-interview' ,'round 1', 'round 2', 'round 3', 'hired', 'rejected']},
+  status: { type: String, required: true, enum: ['pre-screen', 'pre-screen-rejected', 'pre-interview' ,'round 1', 'round 2', 'round 3', 'hired', 'rejected']},
+  feedback: [
+    {
+    round:{
+      type: String,
+      enum: ['pre-screen', 'pre-screen-rejected', 'pre-interview' ,'round 1', 'round 2', 'round 3', 'hired', 'rejected']
+    },
+    feedbackText: { type: String },
+  }],
   currentCTC: { type: Number, required: true },
   expectedCTC: { type: Number, required: true },
   totalExperience: { type: String, required: true },
