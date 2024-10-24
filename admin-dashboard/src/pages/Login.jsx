@@ -27,7 +27,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center text-primary">
       <div className="w-full max-w-md mx-auto bg-primary shadow-lg rounded-lg p-6">
-        <h1 className="text-4xl text-white font-bold mb-6 text-center">1HR</h1>
+        <h1 className="text-4xl text-white font-bold mb-6 text-center">1HR ADMIN</h1>
         <div className="mb-4">
           <label className="block text-white mb-1">Email</label>
           <input

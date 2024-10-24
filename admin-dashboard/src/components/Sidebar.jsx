@@ -25,7 +25,7 @@ function Sidebar() {
   return (
     <div className="bg-primary h-screen w-1/5 flex flex-col items-center">
       <Link to="/" className="w-full text-center">
-        <h3 className="text-3xl font-bold text-white p-6">1HR</h3>
+        <h3 className="text-3xl font-bold text-white p-6">1HR Admin</h3>
       </Link>
       <div className="flex flex-col w-full justify-between mb-8 h-full">
       <ul className="flex flex-col w-full space-y-6 mt-8">

@@ -8,6 +8,8 @@ const JobPostingList = () => {
   const [jobPostings, setJobPostings] = useState([]);
   const [dataReady, setDataReady] = useState(false);
   const navigate = useNavigate();
+  const [isSorting, setIsSorting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // New state variables for filtering, sorting, and pagination
   const [filters, setFilters] = useState({
@@ -28,6 +30,9 @@ const JobPostingList = () => {
   }, [filters, sort, page, limit]);
 
   const fetchData = async () => {
+    if (!isSorting) {
+      setIsLoading(true);
+    }
     try {
       const queryParams = new URLSearchParams({
         ...filters,
@@ -43,7 +48,18 @@ const JobPostingList = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+    finally {
+      setIsLoading(false);
+      setIsSorting(false);
+    }
   };
+  const OverlayLoader = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-5 rounded-lg shadow-lg">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    </div>
+  );
 
   const handleAddJob = () => {
     navigate('/job-posting/create');
@@ -54,11 +70,14 @@ const JobPostingList = () => {
   };
 
   const handleDeleteJob = async (id) => {
+    setIsLoading(true);
     try {
       await axios.delete(`${process.env.REACT_APP_API_URL}/api/jobPosting/${id}`);
       setJobPostings(jobPostings.filter(job => job._id !== id));
     } catch (error) {
       console.error('Error deleting job posting:', error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -71,9 +90,11 @@ const JobPostingList = () => {
   };
 
   const handleFilterChange = (e) => {
+    setIsLoading(true);
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
     setPage(1); // Reset to first page when filters change
+    setIsLoading(false);
   };
 
   const handleSortChange = (e) => {
@@ -94,8 +115,8 @@ const JobPostingList = () => {
     navigate(`/application-trello/${jobId}`);
   };
 
-  if (loading) {
-    return <div className="text-gray-800">Loading...</div>;
+  if (loading || isLoading) {
+    return <OverlayLoader />;
   }
 
   if (!user && !loading) {
@@ -103,7 +124,7 @@ const JobPostingList = () => {
   }
 
   if (!dataReady) {
-    return <div className="text-gray-800">Loading data...</div>;
+    return <OverlayLoader/>;
   }
 
   return (
@@ -308,3 +329,4 @@ const JobPostingList = () => {
 };
 
 export default JobPostingList;
+
