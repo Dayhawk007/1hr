@@ -111,7 +111,8 @@ const ApplicationTrello = () => {
         try {
           await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplication._id}`, {
             status: newStatus,
-            feedback: feedbackInput
+            oldStatus: draggedApplication.status,
+            feedback: feedbackInput,
           }); 
 
           setApplications(
@@ -267,19 +268,13 @@ const ApplicationTrello = () => {
                                   {application.status}
                                 </span>
                               </div>
-                              {currentFeedback ? (
+                              
                                   <div className="mt-2">
                                     <p className="text-sm text-gray-700">
-                                      <strong>Feedback for {round.name}:</strong> {currentFeedback.feedbackText}
+                                      <strong>Feedback for {round.name}:</strong> {currentFeedback && currentFeedback.feedbackText || 'N/A'}
                                     </p>
                                   </div>
-                                ) : (
-                                  <div className="mt-2">
-                                    <p className="text-sm text-gray-500">
-                                      No feedback provided for this round.
-                                    </p>
-                                  </div>
-                                )}
+                                
                             </div>
                           </div>
                         )})

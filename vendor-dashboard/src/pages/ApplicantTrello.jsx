@@ -139,43 +139,37 @@ const ShowApplicants = () => {
    * @param {string} newStatus - The new status to drop the applicant into
    */
   const handleDrop = async (newStatus) => {
-    const userType = getUserType();
-
-    if (draggedApplicant && canMoveCard(userType, newStatus)) {
-      // Show confirmation dialog using native window.confirm
+    if (draggedApplicant && canMoveCard(user.type, newStatus)) {
       const confirmMove = window.confirm(
         `Are you sure you want to move ${draggedApplicant.firstName} ${draggedApplicant.lastName} to "${newStatus}" stage?`
       );
-
+  
       if (confirmMove) {
-        try {
-          await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplicant._id}`, {
-            status: newStatus
-          });
-
-          setApplicants(
-            applicants.map((app) =>
-              app._id === draggedApplicant._id ? { ...app, status: newStatus } : app
-            )
-          );
-          setSuccessMessage(`Applicant moved to "${newStatus}" stage successfully.`);
-
-          // Clear success message after 3 seconds
-          setTimeout(() => setSuccessMessage(''), 3000);
-        } catch (error) {
-          console.error('Error updating applicant status:', error);
-          setError('Failed to update applicant status. Please try again.');
-
-          // Clear error message after 5 seconds
-          setTimeout(() => setError(''), 5000);
+        const feedbackInput = prompt('Please provide your feedback for the applicant:');
+        if (feedbackInput) {
+          try {
+            await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplicant._id}`, {
+              status: newStatus,
+              feedback: feedbackInput
+            });
+  
+            setApplicants(
+              applicants.map((app) =>
+                app._id === draggedApplicant._id ? { ...app, status: newStatus, feedback: feedbackInput } : app
+              )
+            );
+            setSuccessMessage(`Application moved to "${newStatus}" stage successfully.`);
+          } catch (error) {
+            console.error('Error updating application status:', error);
+            setError('Failed to update application status. Please try again.');
+          }
+        } else {
+          alert('Feedback is required.');
         }
       }
       setDraggedApplicant(null);
     } else if (draggedApplicant) {
-      // Provide feedback if the move is not allowed
-      setWarningMessage('You are not authorized to move applicants to this stage.');
-
-      // Clear warning message after 3 seconds
+      setWarningMessage('You are not authorized to move applications to this stage.');
       setTimeout(() => setWarningMessage(''), 3000);
       setDraggedApplicant(null);
     }
@@ -280,7 +274,14 @@ const ShowApplicants = () => {
                       {getApplicantsByRound(round.name).length === 0 ? (
                         <p className="text-gray-500">No applicants in this stage.</p>
                       ) : (
-                        getApplicantsByRound(round.name).map((applicant) => (
+                        getApplicantsByRound(round.name).map((applicant) => 
+                          {
+                            const currentFeedback = applicant.feedback.find(
+                              (feedback) => feedback.round.toLowerCase() === round.name.toLowerCase()
+                            );
+                            
+                            console.log(currentFeedback);
+                          return (
                           <div key={applicant._id}>
                             <div
                               className={`bg-white p-4 rounded-lg shadow ${
@@ -295,7 +296,7 @@ const ShowApplicants = () => {
                                 }
                               }}
                             >
-                              <Link to={`/applications/${applicant._id}`}>
+                              <Link to={`/applicant/${applicant._id}`}>
                                 <h3 className="font-semibold text-gray-800 underline truncate">
                                   {`${applicant.firstName} ${applicant.lastName}`}
                                 </h3>
@@ -313,9 +314,15 @@ const ShowApplicants = () => {
                                   {applicant.status}
                                 </span>
                               </div>
+                              <div className="mt-2">
+                                    <p className="text-sm text-gray-700">
+                                      <strong>Feedback for {round.name}:</strong> {currentFeedback && currentFeedback.feedbackText || 'N/A'}
+                                    </p>
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          </div>)
+                              }
+                        )
                       )}
                     </div>
                   </div>

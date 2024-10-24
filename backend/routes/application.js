@@ -61,11 +61,11 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     // Extract feedback and status from req.body
-    const { feedback, status, ...updateFields } = req.body;
+    const { feedback, status, oldStatus, ...updateFields } = req.body;
 
     // Create the new feedback object
     const newFeedback = {
-      round: status,
+      round: oldStatus,
       feedbackText: feedback
     };
 
