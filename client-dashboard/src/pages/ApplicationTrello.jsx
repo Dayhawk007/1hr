@@ -67,7 +67,14 @@ const ShowApplicants = () => {
   }, [jobId]);
 
   const getApplicantsByRound = (roundName) => {
-    return applicants.filter(applicant => applicant.status.toLowerCase() === roundName.toLowerCase());
+    return applicants.filter(
+      (application) => application.status.toLowerCase() === roundName.toLowerCase()
+    ).map((application) => {
+      const currentFeedback = application.feedback.find(
+        (feedback) => feedback.round.toLowerCase() === roundName.toLowerCase()
+      );
+      return { ...application, currentFeedback };
+    });
   };
 
   const handleDragStart = (applicant) => {
@@ -86,24 +93,34 @@ const ShowApplicants = () => {
       const confirmMove = window.confirm(`Are you sure you want to move ${draggedApplicant.firstName} ${draggedApplicant.lastName} to "${newStatus}" stage?`);
       
       if (confirmMove) {
-        try {
-          await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplicant._id}`, {
-            status: newStatus
-          });
 
-          setApplicants(applicants.map(app => 
-            app._id === draggedApplicant._id ? { ...app, status: newStatus } : app
-          ));
-          setSuccessMessage(`Applicant moved to "${newStatus}" stage successfully.`);
-          
-          // Clear success message after 3 seconds
-          setTimeout(() => setSuccessMessage(''), 3000);
-        } catch (error) {
-          console.error('Error updating applicant status:', error);
-          setError('Failed to update applicant status. Please try again.');
+        const feedbackInput = prompt('Please provide your feedback for the applicant:');
+        if(feedbackInput) {
+    
+          try {
+            await axios.patch(`${process.env.REACT_APP_API_URL}/api/application/${draggedApplicant._id}`, {
+              status: newStatus,
+              oldStatus: draggedApplicant.status,
+              feedback: feedbackInput,
+            });
 
-          // Clear error message after 5 seconds
-          setTimeout(() => setError(''), 5000);
+            setApplicants(applicants.map(app => 
+              app._id === draggedApplicant._id ? { ...app, status: newStatus } : app
+            ));
+            setSuccessMessage(`Applicant moved to "${newStatus}" stage successfully.`);
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
+          } catch (error) {
+            console.error('Error updating applicant status:', error);
+            setError('Failed to update applicant status. Please try again.');
+
+            // Clear error message after 5 seconds
+            setTimeout(() => setError(''), 5000);
+          }
+        }
+        else{
+          alert('Feedback is required.');
         }
       }
       setDraggedApplicant(null);
@@ -224,6 +241,11 @@ const ShowApplicants = () => {
                                   {applicant.status}
                                 </span>
                               </div>
+                              <div className="mt-2">
+                              <p className="text-sm text-gray-700">
+                                <strong>Feedback for {round.name}:</strong> {applicant.currentFeedback && applicant.currentFeedback.feedbackText || 'N/A'}
+                              </p>
+                            </div>
                             </div>
                           </div>
                         ))
