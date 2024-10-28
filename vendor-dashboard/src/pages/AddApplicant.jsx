@@ -118,7 +118,7 @@ function AddApplicant() {
                 <p className="text-gray-600"><span className="font-medium">Application Deadline:</span> {jobDetails.applicationDeadline ? new Date(jobDetails.applicationDeadline).toLocaleDateString() : 'Not Specified'}</p>
               </div>
               <div>
-                <p className="text-gray-600"><span className="font-medium">Compensation Range:</span> {jobDetails.compensationStart && jobDetails.compensationEnd ? `₹${jobDetails.compensationStart.toLocaleString()} - ₹${jobDetails.compensationEnd.toLocaleString()}` : 'Not Specified'}</p>
+                <p className="text-gray-600"><span className="font-medium">Compensation Range:</span> {jobDetails.compensationStart && jobDetails.compensationEnd ? `₹${jobDetails.compensationStart.toLocaleString('en-IN')} - ₹${jobDetails.compensationEnd.toLocaleString('en-IN')}` : 'Not Specified'}</p>
                 <p className="text-gray-600"><span className="font-medium">Experience Range:</span> {jobDetails.experienceRange?.min && jobDetails.experienceRange?.max ? `${jobDetails.experienceRange.min} - ${jobDetails.experienceRange.max} years` : 'Not Specified'}</p>
               </div>
             </div>
@@ -299,6 +299,7 @@ function AddApplicant() {
                     id="expectedCTC"
                     type="number"
                     name="expectedCTC"
+                    placeholder='Enter expected CTC, eg: 4,50,000'
                     value={formData.expectedCTC}
                     onChange={handleInputChange}
                     required
@@ -313,6 +314,7 @@ function AddApplicant() {
                     id="totalExperience"
                     type="text"
                     name="totalExperience"
+                    placeholder='Enter total experience in years'
                     value={formData.totalExperience}
                     onChange={handleInputChange}
                     required
@@ -327,6 +329,7 @@ function AddApplicant() {
                     id="relevantExperience"
                     type="text"
                     name="relevantExperience"
+                    placeholder='Enter relevant experience in years'
                     value={formData.relevantExperience}
                     onChange={handleInputChange}
                     required
@@ -342,6 +345,7 @@ function AddApplicant() {
                     type="text"
                     name="noticePeriod"
                     value={formData.noticePeriod}
+                    placeholder='Enter notice period in days'
                     onChange={handleInputChange}
                     required
                   />

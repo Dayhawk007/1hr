@@ -71,7 +71,7 @@ const JobPostingList = () => {
   };
 
   const formatCompensation = (value) => {
-    return value.toLocaleString();
+    return value.toLocaleString('en-IN');
   };
 
   const truncateDescription = (description) => {
@@ -94,9 +94,16 @@ const JobPostingList = () => {
     setCurrentPage(newPage);
     fetchData(filters, sortBy, sortOrder, newPage);
   };
+  const OverlayLoader = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-5 rounded-lg shadow-lg">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    </div>
+  );
 
   if (loading) {
-    return <div className="text-gray-800">Loading...</div>;
+    return <OverlayLoader />;
   }
 
   if (!user && !loading) {
@@ -104,7 +111,7 @@ const JobPostingList = () => {
   }
 
   if (!dataReady) {
-    return <div className="text-gray-800">Loading data...</div>;
+    return <OverlayLoader />;
   }
 
   return (

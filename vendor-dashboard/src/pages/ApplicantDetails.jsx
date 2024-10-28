@@ -105,11 +105,11 @@ const ApplicantDetails = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">Current CTC</p>
-                    <p className="text-gray-800">₹{applicant.currentCTC.toLocaleString()}</p>
+                    <p className="text-gray-800">₹{applicant.currentCTC.toLocaleString('en-IN')}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">Expected CTC</p>
-                    <p className="text-gray-800">₹{applicant.expectedCTC.toLocaleString()}</p>
+                    <p className="text-gray-800">₹{applicant.expectedCTC.toLocaleString('en-IN')}</p>
                   </div>
                 </div>
               </div>
