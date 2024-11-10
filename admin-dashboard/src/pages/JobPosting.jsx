@@ -115,6 +115,10 @@ const JobPostingList = () => {
     navigate(`/application-trello/${jobId}`);
   };
 
+  const handleViewFunnel = (jobId) => {
+    navigate(`/application-funnel/${jobId}`);
+  };
+
   if (loading || isLoading) {
     return <OverlayLoader />;
   }
@@ -269,6 +273,20 @@ const JobPostingList = () => {
                         </button>
                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           View Applicants
+                        </span>
+                      </div>
+                      <div className="relative group">
+                        <button
+                          onClick={() => handleViewFunnel(job._id)}
+                          className="text-blue-600 hover:text-blue-800 font-medium mr-2"
+                          aria-label="View Funnel"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12H8V4h8zM4 4h16v12H4V4zm0 15.146V6.854l6 6.013z" />
+                          </svg>
+                        </button>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          View Applicant Funnel
                         </span>
                       </div>
                       <div className="relative group">

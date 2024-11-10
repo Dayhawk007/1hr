@@ -10,6 +10,8 @@ import JobForm from './pages/CreateJobPosting';
 import { UserProvider } from './contexts/UserContext';
 import ApplicationTrello from './pages/ApplicationTrello';
 import ApplicantDetails from './pages/ApplicantDetails';
+import HiringFunnel from './pages/ApplicationFunnel';
+
 function App() {
   return (
     <UserProvider>
@@ -23,6 +25,7 @@ function App() {
         <Route path="/job-posting/create" element={<Layout><JobForm/></Layout>} />
         <Route path="/application-trello/:jobId" element={<Layout><ApplicationTrello /></Layout>} />
         <Route path="/applications/:applicantId" element={<Layout><ApplicantDetails /></Layout>} />
+        <Route path="/application-funnel/:jobId" element={<Layout><HiringFunnel /></Layout>} />
       </Routes>
     </Router>
     </UserProvider>
