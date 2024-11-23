@@ -1,35 +1,50 @@
-import express from 'express';
-import Application from '../models/application.js';
+import express from "express";
+import Application from "../models/application.js";
 
 const router = express.Router();
 
-
 // GET all applications
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const applications = await Application.find().populate('job');
+    const applications = await Application.find().populate("job");
     res.json(applications);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching applications', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching applications", error: error.message });
   }
 });
 
 // GET a single application by ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const application = await Application.findById(req.params.id).populate('job').populate('client');
+    const application = await Application.findById(req.params.id)
+      .populate("job")
+      .populate("client");
     if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
+      return res.status(404).json({ message: "Application not found" });
     }
     res.json(application);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching application', error });
+    res.status(500).json({ message: "Error fetching application", error });
   }
 });
 
 // POST a new application
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
+  // Check if an application with the same email already exists
+  const existingApplication = await Application.findOne({
+    email: req.body.email,
+  });
+
   try {
+    if (existingApplication) {
+      console.log("existingApplication");
+      console.log("existingApplication", existingApplication);
+      console.log("duplicate application");
+      return res.status(201).json({ message: "duplicate" });
+    }
+
     const application = new Application({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -40,6 +55,7 @@ router.post('/', async (req, res) => {
       country: req.body.country,
       pincode: req.body.pincode,
       resumeUrl: req.body.resumeUrl,
+      portfolioUrl: req.body.portfolioUrl,
       status: req.body.status,
       currentCTC: req.body.currentCTC,
       expectedCTC: req.body.expectedCTC,
@@ -57,8 +73,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-router.patch('/:id', async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     // Extract feedback and status from req.body
     const { feedback, status, oldStatus, ...updateFields } = req.body;
@@ -66,7 +81,7 @@ router.patch('/:id', async (req, res) => {
     // Create the new feedback object
     const newFeedback = {
       round: oldStatus,
-      feedbackText: feedback
+      feedbackText: feedback,
     };
 
     // Find the application and update all fields except feedback
@@ -74,14 +89,14 @@ router.patch('/:id', async (req, res) => {
       req.params.id,
       {
         ...updateFields,
-        status: status // ensure status is updated
+        status: status, // ensure status is updated
       },
       { new: true }
     );
 
     // If no application found
     if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
+      return res.status(404).json({ message: "Application not found" });
     }
 
     // Check if feedback for the round already exists
@@ -103,24 +118,22 @@ router.patch('/:id', async (req, res) => {
     // Return the updated application with feedback changes
     res.json(application);
   } catch (error) {
-    console.error('Error updating application:', error);
-    res.status(500).json({ message: 'Error updating application', error });
+    console.error("Error updating application:", error);
+    res.status(500).json({ message: "Error updating application", error });
   }
 });
 
-
 // DELETE an application
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const application = await Application.findByIdAndDelete(req.params.id);
     if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
+      return res.status(404).json({ message: "Application not found" });
     }
-    res.json({ message: 'Application deleted' });
+    res.json({ message: "Application deleted" });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting application', error });
+    res.status(500).json({ message: "Error deleting application", error });
   }
 });
-
 
 export { router as applicationRouter };
