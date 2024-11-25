@@ -263,23 +263,23 @@ const ShowApplicants = () => {
         )}
 
         {/* Display Error Message */}
-        {error && (
+        {/* {error && (
           <div className="mb-4 p-4 bg-red-100 text-red-800 rounded">
             {error}
           </div>
-        )}
+        )} */}
 
         {/* Display Warning Message */}
-        {warningMessage && (
+        {/* {warningMessage && (
           <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded">
             {warningMessage}
           </div>
-        )}
+        )} */}
 
         {/* Check if there are job rounds */}
         {jobRounds.length === 0 ? (
-          <div className="text-center text-gray-600 mt-10">
-            <p>No job stages defined for this position.</p>
+          <div className="text-center text-lg text-gray-600 mt-10">
+            <p>No applicants found</p>
           </div>
         ) : (
           <div className="flex-grow flex flex-col">

@@ -191,7 +191,7 @@ const ApplicationTrello = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 flex flex-col">
-      <div>{JSON.stringify(user, null, 8)}</div>
+      {/* <div>{JSON.stringify(user, null, 8)}</div> */}
       <div className="max-w-7xl mx-auto px-4 flex-grow flex flex-col">
         <h1 className="text-3xl font-bold text-primary mb-8">
           Applications Board
@@ -205,23 +205,23 @@ const ApplicationTrello = () => {
         )}
 
         {/* Display Error Message */}
-        {error && (
+        {/* {error && (
           <div className="mb-4 p-4 bg-red-100 text-red-800 rounded">
             {error}
           </div>
-        )}
+        )} */}
 
         {/* Display Warning Message */}
-        {warningMessage && (
+        {/* {warningMessage && (
           <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded">
             {warningMessage}
           </div>
-        )}
+        )} */}
 
         {/* Check if there are job rounds */}
         {jobRounds.length === 0 ? (
-          <div className="text-center text-gray-600 mt-10">
-            <p>No job stages defined for this position.</p>
+          <div className="text-center text-lg text-gray-600 mt-10">
+            <p>No applicants found</p>
           </div>
         ) : (
           <div className="flex-grow flex flex-col">
