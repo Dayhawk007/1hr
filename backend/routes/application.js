@@ -32,6 +32,27 @@ router.get("/:id", async (req, res) => {
 
 // POST a new application
 router.post("/", async (req, res) => {
+  // Define required fields
+  const requiredFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'city',
+    'state',
+    'country',
+    'pincode',
+    'job'
+  ];
+
+  // Check for missing required fields
+  const missingFields = requiredFields.filter(field => !req.body[field]);
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      error: `Missing required fields: ${missingFields.join(', ')}`
+    });
+  }
+
   // Check if an application with the same email already exists
   const existingApplication = await Application.findOne({
     email: req.body.email,
@@ -39,9 +60,6 @@ router.post("/", async (req, res) => {
 
   try {
     if (existingApplication) {
-      console.log("existingApplication");
-      console.log("existingApplication", existingApplication);
-      console.log("duplicate application");
       return res.status(201).json({ message: "duplicate" });
     }
 
@@ -54,17 +72,17 @@ router.post("/", async (req, res) => {
       state: req.body.state,
       country: req.body.country,
       pincode: req.body.pincode,
-      resumeUrl: req.body.resumeUrl,
-      portfolioUrl: req.body.portfolioUrl,
-      status: req.body.status,
-      currentCTC: req.body.currentCTC,
-      expectedCTC: req.body.expectedCTC,
-      totalExperience: req.body.totalExperience,
-      relevantExperience: req.body.relevantExperience,
-      noticePeriod: req.body.noticePeriod,
+      resumeUrl: req.body.resumeUrl || null,
+      portfolioUrl: req.body.portfolioUrl || null,
+      status: req.body.status || 'new',
+      currentCTC: req.body.currentCTC || null,
+      expectedCTC: req.body.expectedCTC || null,
+      totalExperience: req.body.totalExperience || null,
+      relevantExperience: req.body.relevantExperience || null,
+      noticePeriod: req.body.noticePeriod || null,
       job: req.body.job,
-      client: req.body.client,
-      subVendor: req.body.subVendor,
+      client: req.body.client || null,
+      subVendor: req.body.subVendor || null,
     });
     const newApplication = await application.save();
     res.status(201).json(newApplication);

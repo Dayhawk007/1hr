@@ -13,7 +13,7 @@ const applicationSchema = new mongoose.Schema({
   country: { type: String, required: true },
   pincode: { type: String, required: true },
   resumeUrl: { type: String, required: true },
-  portfolioUrl: { type: String, required: true },
+  portfolioUrl: { type: String, required: false },
   status: {
     type: String,
     required: true,

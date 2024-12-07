@@ -71,7 +71,10 @@ const JobPostingList = () => {
   };
 
   const formatCompensation = (value) => {
-    return value.toLocaleString('en-IN');
+    return new Intl.NumberFormat('en-IN', {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    }).format(value);
   };
 
   const truncateDescription = (description) => {
