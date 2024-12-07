@@ -53,17 +53,68 @@ function AddApplicant() {
   }, [jobId]);
 
   const handleInputChange = (e) => {
-    // const newErrors = {};
-
     const { name, value } = e.target;
+    const newErrors = { ...errors };
 
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // Validation checks
+    switch (name) {
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          newErrors.email = 'Please enter a valid email address';
+        } else {
+          delete newErrors.email;
+        }
+        break;
 
-    // if (!formData.pincode.match(/^\d{5,6}$/)) {
-    //   newErrors.pincode = "Enter a valid pincode";
-    // }
+      case 'phone':
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!phoneRegex.test(value)) {
+          newErrors.phone = 'Please enter a valid 10-digit Indian phone number';
+        } else {
+          delete newErrors.phone;
+        }
+        break;
 
-    // setErrors(newErrors);
+      case 'currentCTC':
+        if (isNaN(value) || value < 0) {
+          newErrors.currentCTC = 'Please enter a valid amount';
+        } else {
+          delete newErrors.currentCTC;
+        }
+        break;
+
+      case 'expectedCTC':
+        if (isNaN(value) || value < 0) {
+          newErrors.expectedCTC = 'Please enter a valid amount';
+        } else if (Number(value) <= Number(formData.currentCTC)) {
+          newErrors.expectedCTC = 'Expected CTC should be higher than current CTC';
+        } else {
+          delete newErrors.expectedCTC;
+        }
+        break;
+
+      case 'totalExperience':
+        if (isNaN(value) || value < 0) {
+          newErrors.totalExperience = 'Please enter valid years of experience';
+        } else {
+          delete newErrors.totalExperience;
+        }
+        break;
+
+      case 'relevantExperience':
+        if (isNaN(value) || value < 0) {
+          newErrors.relevantExperience = 'Please enter valid years of experience';
+        } else if (Number(value) > Number(formData.totalExperience)) {
+          newErrors.relevantExperience = 'Relevant experience cannot exceed total experience';
+        } else {
+          delete newErrors.relevantExperience;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+    setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
   const handleAnswerChange = (index, value) => {
@@ -113,11 +164,25 @@ function AddApplicant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if there are any validation errors
+    if (Object.keys(errors).length > 0) {
+      alert('Please fix all errors before submitting');
+      return;
+    }
+
+    // Format CTCs to Indian number format
+    const formattedData = {
+      ...formData,
+      currentCTC: Number(formData.currentCTC).toLocaleString('en-IN'),
+      expectedCTC: Number(formData.expectedCTC).toLocaleString('en-IN')
+    };
+
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/application`,
         {
-          ...formData,
+          ...formattedData,
           job: jobDetails?._id,
           subVendor: user.user?._id,
         }
@@ -283,7 +348,9 @@ function AddApplicant() {
                     Email
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.email ? 'border-red-500' : ''
+                    }`}
                     id="email"
                     type="email"
                     name="email"
@@ -291,6 +358,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <label
@@ -300,7 +368,9 @@ function AddApplicant() {
                     Phone
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.phone ? 'border-red-500' : ''
+                    }`}
                     id="phone"
                     type="tel"
                     name="phone"
@@ -308,6 +378,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
                 <div>
                   <label
@@ -473,7 +544,9 @@ function AddApplicant() {
                     Current CTC
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.currentCTC ? 'border-red-500' : ''
+                    }`}
                     id="currentCTC"
                     type="number"
                     name="currentCTC"
@@ -481,6 +554,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.currentCTC && <p className="text-red-500 text-xs mt-1">{errors.currentCTC}</p>}
                 </div>
                 <div>
                   <label
@@ -490,7 +564,9 @@ function AddApplicant() {
                     Expected CTC
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.expectedCTC ? 'border-red-500' : ''
+                    }`}
                     id="expectedCTC"
                     type="number"
                     name="expectedCTC"
@@ -499,6 +575,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.expectedCTC && <p className="text-red-500 text-xs mt-1">{errors.expectedCTC}</p>}
                 </div>
                 <div>
                   <label
@@ -508,7 +585,9 @@ function AddApplicant() {
                     Total Experience
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.totalExperience ? 'border-red-500' : ''
+                    }`}
                     id="totalExperience"
                     type="text"
                     name="totalExperience"
@@ -517,6 +596,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.totalExperience && <p className="text-red-500 text-xs mt-1">{errors.totalExperience}</p>}
                 </div>
                 <div>
                   <label
@@ -526,7 +606,9 @@ function AddApplicant() {
                     Relevant Experience
                   </label>
                   <input
-                    className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      errors.relevantExperience ? 'border-red-500' : ''
+                    }`}
                     id="relevantExperience"
                     type="text"
                     name="relevantExperience"
@@ -535,6 +617,7 @@ function AddApplicant() {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.relevantExperience && <p className="text-red-500 text-xs mt-1">{errors.relevantExperience}</p>}
                 </div>
                 <div>
                   <label
