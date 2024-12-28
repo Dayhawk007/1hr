@@ -171,18 +171,12 @@ function AddApplicant() {
       return;
     }
 
-    // Format CTCs to Indian number format
-    const formattedData = {
-      ...formData,
-      currentCTC: Number(formData.currentCTC).toLocaleString('en-IN'),
-      expectedCTC: Number(formData.expectedCTC).toLocaleString('en-IN')
-    };
-
+    // Remove the CTC formatting - send raw numbers to API
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/application`,
         {
-          ...formattedData,
+          ...formData,  // Send original formData without formatting CTCs
           job: jobDetails?._id,
           subVendor: user.user?._id,
         }
@@ -194,7 +188,6 @@ function AddApplicant() {
         );
       } else {
         alert("Application submitted successfully!");
-
         navigate(`/job-posting/`);
       }
     } catch (error) {
