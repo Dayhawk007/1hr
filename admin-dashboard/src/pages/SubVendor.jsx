@@ -3,6 +3,32 @@ import { useUserContext } from '../contexts/UserContext';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+        <p className="text-gray-800 text-lg mb-6">{message}</p>
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded font-medium text-gray-600 hover:bg-gray-100 transition duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded font-medium bg-red-500 text-white hover:bg-red-600 transition duration-300"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SubVendorList = () => {
   const { user, loading: userLoading } = useUserContext();
   const [subVendors, setSubVendors] = useState([]);
@@ -15,6 +41,7 @@ const SubVendorList = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSorting, setIsSorting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, id: null });
 
   // Pagination and sorting state
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,20 +119,38 @@ const SubVendorList = () => {
   };
 
   const handleDeleteSubVendor = async (id) => {
-    if (window.confirm('Are you sure you want to delete this sub-vendor?')) {
-      setIsLoading(true);
-      try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/user/${id}`, {
-          data: { type: 'sub-vendor' }
-        });
-        setSubVendors(subVendors.filter(subVendor => subVendor._id !== id));
-        alert('Sub-vendor deleted successfully');
-      } catch (error) {
-        console.error('Error deleting sub-vendor:', error);
-        alert('Failed to delete sub-vendor');
-      } finally {
-        setIsLoading(false);
-      }
+    if (!id) return;
+    
+    setDeleteConfirmation({ show: false, id: null });
+    setIsLoading(true);
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/user/${id}`, {
+        data: { type: 'sub-vendor' }
+      });
+      setSubVendors(subVendors.filter(subVendor => subVendor._id !== id));
+      
+      // Show success message as an overlay that automatically disappears
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+      successMessage.textContent = 'Sub-vendor deleted successfully';
+      document.body.appendChild(successMessage);
+      
+      setTimeout(() => {
+        successMessage.style.transform = 'translateX(150%)';
+        setTimeout(() => document.body.removeChild(successMessage), 500);
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error deleting sub-vendor:', error);
+      // Show error message as an overlay
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+      errorMessage.textContent = 'Failed to delete sub-vendor';
+      document.body.appendChild(errorMessage);
+      
+      setTimeout(() => document.body.removeChild(errorMessage), 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,7 +173,18 @@ const SubVendorList = () => {
           updatedSubVendors[currentSubVendor.index] = response.data.user;
           return updatedSubVendors;
         });
-        alert('Sub-vendor updated successfully');
+        
+        // Show success message overlay
+        const successMessage = document.createElement('div');
+        successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+        successMessage.textContent = 'Sub-vendor updated successfully';
+        document.body.appendChild(successMessage);
+        
+        setTimeout(() => {
+          successMessage.style.transform = 'translateX(150%)';
+          setTimeout(() => document.body.removeChild(successMessage), 500);
+        }, 2000);
+        
       } else {
         // Add new sub-vendor
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/user/signup`, {
@@ -138,7 +194,18 @@ const SubVendorList = () => {
         const newUser = response.data.user;
         if (newUser && newUser._id) {
           setSubVendors(prevSubVendors => [...prevSubVendors, newUser]);
-          alert('New sub-vendor added successfully');
+          
+          // Show success message overlay
+          const successMessage = document.createElement('div');
+          successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+          successMessage.textContent = 'New sub-vendor added successfully';
+          document.body.appendChild(successMessage);
+          
+          setTimeout(() => {
+            successMessage.style.transform = 'translateX(150%)';
+            setTimeout(() => document.body.removeChild(successMessage), 500);
+          }, 2000);
+          
         } else {
           throw new Error('Incomplete user data received from server');
         }
@@ -148,7 +215,18 @@ const SubVendorList = () => {
       await fetchSubVendors(); // Refresh the sub-vendor list
     } catch (error) {
       console.error('Error saving sub-vendor:', error);
-      alert(error.message || 'Failed to save sub-vendor');
+      
+      // Show error message overlay
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+      errorMessage.textContent = error.message || 'Failed to save sub-vendor';
+      document.body.appendChild(errorMessage);
+      
+      setTimeout(() => {
+        errorMessage.style.transform = 'translateX(150%)';
+        setTimeout(() => document.body.removeChild(errorMessage), 500);
+      }, 3000);
+      
     } finally {
       setIsLoading(false);
     }
@@ -284,7 +362,7 @@ const SubVendorList = () => {
                           </div>
                           <div className="relative group">
                             <button
-                              onClick={() => handleDeleteSubVendor(subVendor._id)}
+                              onClick={() => setDeleteConfirmation({ show: true, id: subVendor._id })}
                               className="text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                               aria-label="Delete"
                             >
@@ -478,6 +556,12 @@ const SubVendorList = () => {
           </div>
         </div>
       )}
+      <ConfirmationModal
+        isOpen={deleteConfirmation.show}
+        onClose={() => setDeleteConfirmation({ show: false, id: null })}
+        onConfirm={() => handleDeleteSubVendor(deleteConfirmation.id)}
+        message="Are you sure you want to delete this sub-vendor?"
+      />
     </div>
   );
 };

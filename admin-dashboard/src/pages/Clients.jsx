@@ -3,6 +3,32 @@ import { useUserContext } from '../contexts/UserContext';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+        <p className="text-gray-800 text-lg mb-6">{message}</p>
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded font-medium text-gray-600 hover:bg-gray-100 transition duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded font-medium bg-red-500 text-white hover:bg-red-600 transition duration-300"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ClientList = () => {
   const { user, loading: userLoading } = useUserContext();
   const [clients, setClients] = useState([]);
@@ -15,6 +41,7 @@ const ClientList = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSorting, setIsSorting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, id: null });
 
   // Pagination and sorting state
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,20 +119,37 @@ const ClientList = () => {
   };
 
   const handleDeleteClient = async (id) => {
-    if (window.confirm('Are you sure you want to delete this client?')) {
-      setIsLoading(true);
-      try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/user/${id}`, {
-          data: { type: 'client' }
-        });
-        setClients(clients.filter(client => client._id !== id));
-        alert('Client deleted successfully');
-      } catch (error) {
-        console.error('Error deleting client:', error);
-        alert('Failed to delete client');
-      } finally {
-        setIsLoading(false);
-      }
+    if (!id) return;
+    
+    setDeleteConfirmation({ show: false, id: null });
+    setIsLoading(true);
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/user/${id}`, {
+        data: { type: 'client' }
+      });
+      setClients(clients.filter(client => client._id !== id));
+      
+      // Show success message as an overlay
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+      successMessage.textContent = 'Client deleted successfully';
+      document.body.appendChild(successMessage);
+      
+      setTimeout(() => {
+        successMessage.style.transform = 'translateX(150%)';
+        setTimeout(() => document.body.removeChild(successMessage), 500);
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+      errorMessage.textContent = 'Failed to delete client';
+      document.body.appendChild(errorMessage);
+      
+      setTimeout(() => document.body.removeChild(errorMessage), 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,7 +172,18 @@ const ClientList = () => {
           updatedClients[currentClient.index] = response.data.user;
           return updatedClients;
         });
-        alert('Client updated successfully');
+        
+        // Show success message overlay
+        const successMessage = document.createElement('div');
+        successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+        successMessage.textContent = 'Client updated successfully';
+        document.body.appendChild(successMessage);
+        
+        setTimeout(() => {
+          successMessage.style.transform = 'translateX(150%)';
+          setTimeout(() => document.body.removeChild(successMessage), 500);
+        }, 2000);
+        
       } else {
         // Add new client
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/user/signup`, {
@@ -145,10 +200,18 @@ const ClientList = () => {
       }
       setIsModalOpen(false);
       setCurrentClient(null);
-      await fetchClients(); // Refresh the client list
+      await fetchClients();
     } catch (error) {
       console.error('Error saving client:', error);
-      alert(error.message || 'Failed to save client');
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-500 ease-in-out';
+      errorMessage.textContent = error.message || 'Failed to save client';
+      document.body.appendChild(errorMessage);
+      
+      setTimeout(() => {
+        errorMessage.style.transform = 'translateX(150%)';
+        setTimeout(() => document.body.removeChild(errorMessage), 500);
+      }, 3000);
     } finally {
       setIsLoading(false);
     }
@@ -284,7 +347,7 @@ const ClientList = () => {
                           </div>
                           <div className="relative group">
                             <button
-                              onClick={() => handleDeleteClient(client._id)}
+                              onClick={() => setDeleteConfirmation({ show: true, id: client._id })}
                               className="text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                               aria-label="Delete"
                             >
@@ -475,6 +538,14 @@ const ClientList = () => {
             </div>
           </div>
         </div>
+      )}
+      {deleteConfirmation.show && (
+        <ConfirmationModal
+          isOpen={deleteConfirmation.show}
+          onClose={() => setDeleteConfirmation({ show: false, id: null })}
+          onConfirm={() => handleDeleteClient(deleteConfirmation.id)}
+          message="Are you sure you want to delete this client?"
+        />
       )}
     </div>
   );
